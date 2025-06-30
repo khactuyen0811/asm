@@ -1,0 +1,266 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Programming_NguyenKhacTuyen_BH02777
+{
+    internal class Program
+        
+    {
+        static int n_customer = 0;
+        static string[] name_customer = new string[1000];
+        static double[] water_bill_last_month = new double[1000];
+        static double[] water_bill_next_month = new double[1000];
+        static int[] type_customer = new int[1000];
+
+        static int[] type_customers = new int[1000];
+        static double water_meter;
+       
+        static int Inputncustomer(int n_ctm)
+        { int n_customers = 0;
+            bool continue_ = false;
+            while (!continue_)
+            {
+                Console.WriteLine($"input customer {n_ctm} (1,Administrative agency, public services)/(2.Production units)");
+                n_customers = Convert.ToInt32(Console.ReadLine());
+                try
+                {
+                    if (n_customers != 1 && n_customers != 2 && n_customers != 3)
+                    {
+                        Console.WriteLine(" please enter again (1.Household customer)  (2.Administrative agency, public services) (3.Production units)");
+                    }      
+                else
+                    {
+                        continue_ = true;
+                    }
+            }catch (Exception e)
+                {
+                    Console.WriteLine(" errol ");
+                    continue_ = false;
+                }
+                
+                }return n_customers;
+        }
+        static int Inputncustomers(int n_ctm)
+        {
+            int n_customers = 0;
+            bool continue_ = false;
+            while (!continue_)
+            {try
+                {
+                    Console.WriteLine(" input number(1 => 4) (1. 1=> 10 people) (2.10 => 20 people)  (3.20=> 30 people ) (4.over 30 people)");
+                    n_customers = Convert.ToInt32(Console.ReadLine());
+
+                    if (n_customers != 1 && n_customers != 2 && n_customers != 3 && n_customers != 4)
+                    {
+                        Console.WriteLine("input errol, enter again (1. 1=> 10 people)" +
+                            " (2.10 => 20 people) " +
+                            "(3.20=> 30 people )" +
+                            " (4.over 30 people)");
+
+                    }
+                    else
+                    {
+                        
+                        continue_ = true;
+                    }
+                } catch (Exception e)
+                {
+                    Console.WriteLine(" errol ");
+                    continue_ = false;
+                }
+
+            }
+            return n_customers;
+        }
+
+        static void print_all_customers()
+        {
+            Console.WriteLine("-----------------------------------------");
+            for (int i = 0; i < n_customer; i++)
+            {
+                int type = type_customer[i];
+                double meter = water_bill_next_month[i] - water_bill_last_month[i];
+                string typeName = GetCustomerTypeName(type);
+
+                double totalBill;
+
+                
+                if (type == 1)
+                {
+                    int householdSubType = type_customers[i]; 
+                    totalBill = Waterbills(householdSubType, meter);
+                }
+                else
+                {
+                    totalBill = water_bill(type, meter);
+                }
+
+                Console.WriteLine($" number {i + 1} : {name_customer[i]}" +
+                                  $";type {typeName}" +
+                                  $";water meter {meter}" +
+                                  $"; total bill {totalBill}");
+            }
+        }
+        
+        static string GetCustomerTypeName(int type)
+        {
+            switch (type)
+            {
+                case 1:
+                    return "Household customer";
+                case 2:
+                    return "Administrative agency, public services";
+                case 3:
+                    return "Household customerProduction units";
+                default:
+                    return "error";
+                
+            }
+        }
+       
+        static double water_bill(int typeids, double x)
+            {
+                switch(typeids)
+                {
+                    case 2:
+                        return (9.955 * x) * 0.1 + 9.955 * x;
+                    case 3:
+                        return (11.615 * x) * 0.1 + 11.655 * x;
+                    default:
+                        return -1;
+                }
+            }
+
+
+        
+        static double Waterbills(int typeid, double x)
+        {
+
+            switch (typeid)
+            {
+                case 1:
+                    return (5.973 * x) *0.1 +5.973 * x;
+                case 2:
+                    return (7.052 * x) * 0.1 +7.052 * x;
+                case 3:
+                    return (8.699 * x) * 0.1 + 8.699 * x;
+                case 4:
+                    return (15.929 * x) * 0.1 + 15.292 * x;
+                default:
+                    return -1;
+
+            }
+        }
+        
+        static void update_customer()
+        {
+            bool continue_input = true;
+            while (continue_input)
+            {
+                n_customer++;
+                Console.WriteLine($"please enter no {n_customer} name customer ");
+                name_customer[n_customer - 1] = Console.ReadLine();
+
+                Console.WriteLine($"input type of customer (1/2/3): " +
+                    "(1. Household customer)  " +
+                    "(2. Administrative agency, public services) " +
+                    "(3. Production units)");
+
+                int type = Convert.ToInt32(Console.ReadLine());
+                type_customer[n_customer - 1] = type; 
+                if (type == 1)
+                {
+                    type_customers[n_customer - 1] = Inputncustomers(n_customer);
+                }
+
+                Console.WriteLine($"please enter no {n_customer} water bill last month ");
+                water_bill_last_month[n_customer - 1] = Convert.ToDouble(Console.ReadLine());
+                Console.WriteLine($"please enter no {n_customer} water bill next month ");
+                water_bill_next_month[n_customer - 1] = Convert.ToDouble(Console.ReadLine());
+
+                Console.WriteLine("Do you want to continue input your customer? (y/n) ");
+                string input = Console.ReadLine();
+                if (input != "y")
+                {
+                    continue_input = false;
+                }
+            }
+        }
+
+
+        static void removeChooseCustomer()
+        {
+            Console.WriteLine("Which customer do you want to remove? (number from 1 to " + n_customer + ")");
+            int choose_index = Convert.ToInt32(Console.ReadLine()) - 1; 
+            if (choose_index < 0 || choose_index >= n_customer)
+            {
+                Console.WriteLine("Invalid index. No customer removed.");
+                return;
+            }
+
+            for (int i = choose_index; i < n_customer - 1; i++)
+            {
+                name_customer[i] = name_customer[i + 1];
+                water_bill_last_month[i] = water_bill_last_month[i + 1];
+                water_bill_next_month[i] = water_bill_next_month[i + 1];
+                type_customer[i] = type_customer[i + 1];
+                type_customers[i] = type_customers[i + 1]; 
+            }
+
+            
+            name_customer[n_customer - 1] = null;
+            water_bill_last_month[n_customer - 1] = 0;
+            water_bill_next_month[n_customer - 1] = 0;
+            type_customer[n_customer - 1] = 0;
+            type_customers[n_customer - 1] = 0; 
+
+            n_customer--;
+            Console.WriteLine("Customer removed successfully.");
+        }
+
+
+        static void menu()
+        {
+            while (true)
+            {
+                Console.WriteLine("Choose your action: ");
+                Console.WriteLine("0. Exit ");
+                Console.WriteLine("1. Add new task ");
+                Console.WriteLine("2. View all tasks ");
+                Console.WriteLine("3. Remove a task");
+                
+                int choice = Convert.ToInt32(Console.ReadLine());
+                switch (choice)
+                {
+                    case 0:
+                        Console.WriteLine("Exited");
+                        return;
+                    case 1:
+                        Console.WriteLine("-- Add a new customer --");
+                        update_customer();
+                        break;
+                    case 2:
+                        print_all_customers();
+                        break;
+                   
+                    case 3 :
+                        Console.WriteLine("-- Remove customer --");
+                        removeChooseCustomer();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong choice! Choose again, please!");
+                        break;
+                }
+            }
+        }
+        static void Main(string[] args)
+        {
+            menu();
+            
+        }
+    }
+}
